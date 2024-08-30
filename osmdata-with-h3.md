@@ -118,5 +118,5 @@ end
 ```
 4. Insert the data 
 ```shell
-osm2pgsql --create --slim ./data/nepal-latest-internal.osm.pbf --extra-attributes --middle-with-nodes --number-processes 8 --style raw.lua --output=flex --prefix raw_osm
+osm2pgsql --create --slim ./asia-latest-internal.osm.pbf --extra-attributes --middle-with-nodes --number-processes 8 --style raw.lua --output=flex --prefix raw_osm -d postgres -U admin
 ```
