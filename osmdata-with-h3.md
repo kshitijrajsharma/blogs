@@ -1,3 +1,7 @@
+Machine used in experiment : 
+<img width="211" alt="image" src="https://github.com/user-attachments/assets/77f6d69a-f698-4e1a-bc36-f0012a91eb74">
+
+
 1. Install osm2pgsql 
 ```shell
 brew install osm2pgsql
