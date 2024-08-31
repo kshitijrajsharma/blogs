@@ -151,3 +151,20 @@ ALTER TABLE ways_poly ADD COLUMN h3_ix h3index GENERATED ALWAYS AS (h3_lat_lng_t
 ```
 Note : I will advise this to run inside screen with native psql terminal instead of GUI based db connection
 This will take time however it is one time thingy , do this for all tables you have that needs querying 
+
+Lets create a function to get h3 indexes in query location
+
+```sql
+CREATE OR REPLACE FUNCTION get_h3_indexes(shape geometry, res integer)
+  RETURNS h3index[] AS $$
+DECLARE
+  h3_indexes h3index[];
+BEGIN
+  SELECT ARRAY(
+    SELECT h3_polygon_to_cells(shape, res)
+  ) INTO h3_indexes;
+
+  RETURN h3_indexes;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+```
