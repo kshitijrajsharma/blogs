@@ -26,35 +26,40 @@ local tables = {}
 
 tables.nodes = osm2pgsql.define_table ({
     name='nodes',
-    ids = {type='node',id_column = 'osm_id' },
+    ids = {type='node',id_column = 'id' },
     columns = {{ column = 'geom', type = 'point', projection = srid, not_null = true },},
-    indexes={{ column = 'geom', method = 'gist' },}
 })
-
 
 tables.ways_line = osm2pgsql.define_table ({
     name='ways_line',
-    ids = {type='way',id_column = 'osm_id' },
+    ids = {type='way',id_column = 'id' },
     columns = {{ column = 'geom', type = 'linestring', projection = srid, not_null = true },},
-    indexes={{ column = 'geom', method = 'gist' },}
 })
-
 
 tables.ways_poly = osm2pgsql.define_table ({
     name='ways_poly',
-    ids = {type='way',id_column = 'osm_id' },
+    ids = {type='way',id_column = 'id' },
     columns = {{ column = 'geom', type = 'polygon', projection = srid, not_null = true },},
-    indexes={{ column = 'geom', method = 'gist' },}
 })
 tables.rels = osm2pgsql.define_table ({
     name='relations',
-    ids = {type='relation',id_column = 'osm_id' },
+    ids = {type='relation',id_column = 'id' },
     columns = {{ column = 'geom', type = 'geometry', projection = srid, not_null = true },},
-    indexes={{ column = 'geom', method = 'gist' },}
+
 })
 
 
+-- Returns true if there are no tags left.
+function clean_tags(tags)
+    tags.odbl = nil
+    tags['source:ref'] = nil
+    return next(tags) == nil
+end
+
 function osm2pgsql.process_node(object)
+    if clean_tags(object.tags) then
+        return
+    end
     tables.nodes:insert({
         geom = object:as_point()
     })
@@ -63,7 +68,9 @@ end
 
 function osm2pgsql.process_way(object)
 
-
+    if clean_tags(object.tags) then
+        return
+    end
     if object.is_closed and (#object.nodes >3) then
         tables.ways_poly:insert({
             geom = object:as_polygon()
@@ -75,11 +82,11 @@ function osm2pgsql.process_way(object)
     end
 end
 
-
 function osm2pgsql.process_relation(object)
+    if clean_tags(object.tags) then
+        return
+    end
     local relation_type = object:grab_tag('type')
-
-
     -- check if it is route cause route will be multilinestring
     if relation_type == 'route' then
         tables.rels:insert({
@@ -87,32 +94,26 @@ function osm2pgsql.process_relation(object)
         })
         return
     end
-    -- check if its boundary if it is it should be casted as polyon by merging the linestring
-    if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
-        tables.rels:insert({
-            tags = object.tags,
-            geom = object:as_multilinestring():line_merge()
-        })
+
+    if relation_type == 'boundary' or relation_type == 'multipolygon' or object.tags.boundary  then
+        -- first try to convert object to mulitpolygon if not store it as multilinestring
+        local geom = object:as_multipolygon()
+        if geom then
+            tables.rels:insert({
+                geom = geom
+            })AUT/KTM/270824/0006/01 
+        else
+            tables.rels:insert({
+                geom = object:as_multilinestring():line_merge()
+            })
+        end
         return
     end
-
-
-    -- if its multipolygon on tag then its multipolygon
-
-
-    if relation_type == 'multipolygon' then
-        tables.rels:insert({
-            tags = object.tags,
-            geom = object:as_multipolygon()
-        })
-        return
-    end
-    -- at this point if nothing is satisfied then may be its polygon or its linestring or anything ,  we don't know so bundling all them to geometry collection
-
-
+    -- at this point if nothing is satisfied then may be its polygon or its linestring or anything combined ,  we don't know so bundling all them to geometry collection
     tables.rels:insert({
         geom= object:as_geometrycollection()
     })
+
 
 end
 ```
