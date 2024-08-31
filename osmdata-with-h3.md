@@ -121,3 +121,33 @@ end
 ```shell
 osm2pgsql --create --slim ./asia-latest-internal.osm.pbf --extra-attributes --middle-with-nodes --number-processes 8 --style raw.lua --output=flex --prefix raw_osm -d postgres -U admin
 ```
+
+5. Lets prepare our database ready for h3 indexes
+
+Install 
+```shell
+pip install pgxnclient cmake
+pgxn install h3
+```
+
+Create extension 
+```sql
+create extension h3;
+create extension h3_postgis CASCADE;
+```
+
+Determine the reslution of your table : 
+I personally find this tool very useful for that 
+https://wolf-h3-viewer.glitch.me/
+
+Resolution 6 seems ideal for osm data extraction with buffer
+![image](https://github.com/user-attachments/assets/bd89d7bd-7041-4ec4-aff6-58666f118e67)
+![image](https://github.com/user-attachments/assets/a1014761-d124-4170-bd89-1a860943b6ca)
+
+Lets do it for ways_poly
+
+```sql
+ALTER TABLE ways_poly ADD COLUMN h3_ix h3index GENERATED ALWAYS AS (h3_lat_lng_to_cell(ST_Centroid(geom), 6)) STORED;
+```
+Note : I will advise this to run inside screen with native psql terminal instead of GUI based db connection
+This will take time however it is one time thingy , do this for all tables you have that needs querying 
