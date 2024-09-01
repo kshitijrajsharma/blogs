@@ -175,6 +175,10 @@ Create index on h3_ix column
 create index on ways_poly(h3_ix);
 ```
 
+Lets get all the features in ways_poly within [nepal geom ](https://www.openstreetmap.org/relation/184633)
+<img width="741" alt="image" src="https://github.com/user-attachments/assets/ef654e85-838c-4cf4-afc2-705abfdd8e44">
+
+
 Lets lookup the rows using st_intersects 
 ```sql
 --using gist geospatial lookup
