@@ -168,3 +168,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 ```
+
+Create index on h3_ix column
+```sql
+create index on ways_poly(h3_ix);
+```
+
+Lets lookup the rows using st_intersects 
+```sql
+--using gist geospatial lookup
+explain analyze
+with t1 as (
+SELECT geom
+FROM relations r
+WHERE r.id = 184633
+)
+select * 
+from ways_poly wp , t1
+where st_intersects(t1.geom,wp.geom)
+```
+
+lookup rows using h3 index
+
+```sql
+--using h3 index search 
+explain analyze
+with t1 as (
+SELECT geom
+FROM relations r
+WHERE r.id = 184633
+)
+select * 
+from ways_poly wp , t1
+where wp.h3_ix= ANY(get_h3_indexes(t1.geom,6))
+```
