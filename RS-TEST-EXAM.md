@@ -211,3 +211,30 @@ Hit run and you should have lake identified now
 ![grafik](https://github.com/user-attachments/assets/c59b6109-c846-4beb-b3aa-6b936bdcab77)
 
 We are done with the Task II . Voilaa 
+
+### Task III Higher level 
+
+Now we are creating a higher level , level above current classification to classify the island as one object 
+
+Add new process and add change algorithm to multiresolution segmentation 
+
+Domain : Image object level 
+Level : New Level 
+New Level Name : L2 
+Level usage as : Create Above 
+
+and here you can play with scale parameter shape and compactness , it worked for me in 6000,0.4,0.7
+
+![grafik](https://github.com/user-attachments/assets/67471bee-8fdd-4162-8191-467bc15cc76b)
+
+Execute 
+
+Now on view setting turn off new level and turn on the L2 and Outline 
+![grafik](https://github.com/user-attachments/assets/68a6d781-3487-4ab5-adb2-684feb54b72a)
+
+It should look like this and you should have single object for the island 
+and we are done 
+
+![grafik](https://github.com/user-attachments/assets/18a5face-347c-46a9-9262-4bd4c707380a)
+
+Save your project and go home !
