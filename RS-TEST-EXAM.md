@@ -130,7 +130,7 @@ Change your operation to apply and execute
 Now go to View settings and Change Fill From samples to Class Color And Disable outline 
 ![grafik](https://github.com/user-attachments/assets/f12ab6b8-5afc-4dc4-acf8-2ecf7d9c34db)
 
-You should be able to see your classification now , Volaaaa
+You should be able to see your classification now , Voilaaaa done with task 1
 
 ![grafik](https://github.com/user-attachments/assets/cf584adb-9234-44ca-b125-1b11a3a3809d)
 
